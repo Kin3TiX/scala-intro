@@ -59,12 +59,17 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
 
-  test("tree generation") {
+  test("test decoding") {
     new TestTrees {
-      generateGraph(expected_tree, "expected.dot")
-      val generated = createCodeTree(char_list)
-      generateGraph(generated, "generated.dot")
-      assert(generated === expected_tree)
+      val testList: List[Bit] = List(0, 0, 0, 1, 1, 0, 1)
+      assert(decode(expected_tree, testList) === List[Char]('h', 'a', '3'))
+    }
+  }
+
+  test("test encoding") {
+    new TestTrees {
+      val testText: List[Char] = List('h', 'a', '3')
+      assert(encode(expected_tree)(testText) === List[Bit](0, 0, 0, 1, 1, 0, 1))
     }
   }
 
@@ -74,51 +79,29 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
-  def generateGraph(tree: CodeTree, fileName: String) = {
-    val file = new File(fileName)
-    val bw = new BufferedWriter(new FileWriter(file))
-    bw.write("digraph dtree {")
-    printNodes(tree, bw)
-    bw.write("\n")
-    printEdges(tree, bw)
-    bw.write("\n}")
-    bw.close()
-  }
-
-  def printNodes(tree: CodeTree, bw: BufferedWriter): Unit = tree match {
-    case Leaf(letter, weight) => {
-      val inner = raw""""$letter\n$weight""""
-      bw.write(s"\n\t$letter[label=$inner]")
-    }
-    case Fork(leftTree, rightTree, letter_list, weight) => {
-      val letters = letter_list.mkString
-      val inner = raw""""$letters\n$weight""""
-      bw.write(s"\n\t$letters[label=$inner]")
-      printNodes(leftTree, bw)
-      printNodes(rightTree, bw)
+  test("test conversion to table") {
+    new TestTrees {
+      val result = convert(expected_tree)
+      val expected = List(('h', List(0, 0)), ('a', List(0, 1)), ('0', List(1, 1)), ('3', List(1, 0, 1)), ('l', List(1,0,0,0)), ('4', List(1,0,0,1)))
+      expected.foreach(tuple => assert(result.contains(tuple)))
     }
   }
 
-  def printEdges(tree: CodeTree, bw: BufferedWriter): Unit = tree match {
-    case Fork(leftTree, rightTree, letter_list, _) => {
-      val src = letter_list.mkString
-      leftTree match {
-        case Fork(_, _, letter_list, _) => {
-          val dest = letter_list.mkString
-          bw.write(s"\n\t$src -> $dest;")
-          printEdges(leftTree, bw)
-        }
-        case Leaf(dest, _) => bw.write(s"\n\t$src -> $dest;")
-      }
-      rightTree match {
-        case Fork(_, _, letter_list, _) => {
-          val dest = letter_list.mkString
-          bw.write(s"\n\t$src -> $dest;")
-          printEdges(rightTree, bw)
-        }
-        case Leaf(dest, _) => bw.write(s"\n\t$src -> $dest;")
-      }
+  test("combine of singleton or nil") {
+    assert(combine(List(Leaf('a', 1))) == List(Leaf('a', 1)))
+    assert(combine(Nil) == Nil)
+  }
+
+  test("quick encode simple") {
+    new TestTrees {
+      val testText: List[Char] = List('h', 'a', '3')
+      assert(quickEncode(expected_tree)(testText) === List[Bit](0, 0, 0, 1, 1, 0, 1))
     }
+  }
+
+  test("quick encode == slow encode, french") {
+    val testList = List('a', 'b', 'c')
+    assert(quickEncode(frenchCode)(testList) === encode(frenchCode)(testList))
   }
 
 }
