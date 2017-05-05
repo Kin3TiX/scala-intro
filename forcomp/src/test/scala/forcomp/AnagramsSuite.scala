@@ -10,6 +10,10 @@ import Anagrams._
 @RunWith(classOf[JUnitRunner])
 class AnagramsSuite extends FunSuite  {
 
+  test("wordOccurrences: eeK") {
+    assert(wordOccurrences("eeK") === List(('e', 2), ('k', 1)))
+  }
+
   test("wordOccurrences: abcd") {
     assert(wordOccurrences("abcd") === List(('a', 1), ('b', 1), ('c', 1), ('d', 1)))
   }
@@ -23,11 +27,17 @@ class AnagramsSuite extends FunSuite  {
     assert(sentenceOccurrences(List("abcd", "e")) === List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)))
   }
 
+  test("sentenceOccurrences: eeK beork") {
+    assert(sentenceOccurrences(List("eek", "beork")) === List(('b', 1), ('e', 3), ('k', 2), ('o', 1), ('r', 1)))
+  }
 
   test("dictionaryByOccurrences.get: eat") {
     assert(dictionaryByOccurrences.get(List(('a', 1), ('e', 1), ('t', 1))).map(_.toSet) === Some(Set("ate", "eat", "tea")))
   }
 
+  test("wordAnagrams: eat") {
+    assert(wordAnagrams("eat").toSet === Set("ate", "eat", "tea"))
+  }
 
   test("word anagrams: married") {
     assert(wordAnagrams("married").toSet === Set("married", "admirer"))
