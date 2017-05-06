@@ -86,12 +86,12 @@ object Anagrams {
    *  in the example above could have been displayed in some other order.
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
-    val empty = List()
-    val uniques = for(occ <- occurrences) yield List(occ)
-    println(uniques)
-    val uniquePerms = uniques map ((char: Char, occ: Int) => for(perm <- 1 until occ) yield List((char, perm))) toList
-    println(uniquePerms)
-    empty :: occurrences :: uniques
+    if(occurrences.isEmpty) List(List())
+    else for {
+      (char, occ) <- occurrences
+      perm <- 1 to occ
+      (other)
+    } yield List((char, perm))
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
