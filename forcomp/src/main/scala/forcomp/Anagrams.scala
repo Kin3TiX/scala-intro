@@ -87,11 +87,12 @@ object Anagrams {
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
     if(occurrences.isEmpty) List(List())
-    else for {
-      (char, occ) <- occurrences
-      perm <- 1 to occ
-      (other)
-    } yield List((char, perm))
+    else { 
+      for {
+        perm <- 1 to occurrences.head._2
+        tail <- combinations(occurrences.tail)
+      } yield List(List()) ::: List((occurrences.head._1, perm) :: tail) ::: List(tail)
+    }.toList.flatten
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
