@@ -110,11 +110,13 @@ trait Solver extends GameDef {
    * position.
    */
   lazy val solution: List[Move] = {
-    if(pathsToGoal.isEmpty) Nil
-    val solutions = for {
-      solution <- pathsToGoal
-    } yield solution._2.reverse
-    solutions.head
+    if(pathsToGoal.isEmpty) List()
+    else {
+      val solutions = for {
+        solution <- pathsToGoal
+      } yield solution._2.reverse
+      solutions.head
+    }
   }
 
 }
