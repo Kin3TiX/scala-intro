@@ -51,4 +51,46 @@ class CalculatorSuite extends FunSuite with ShouldMatchers {
     assert(resultRed2() == "red")
   }
 
+  trait unsolvablePolynomial {
+    val a = Var(1.0)
+    val b = Var(2.0)
+    val c = Var(3.0)
+  }
+
+  trait singleRootPolynomial {
+    val a = Var(2.0)
+    val b = Var(4.0)
+    val c = Var(2.0)
+  }
+
+  trait dualRootPolynomial {
+    val a = Var(1.0)
+    val b = Var(3.0)
+    val c = Var(-4.0)
+  }
+
+  test("intermediary discriminant") {
+    new unsolvablePolynomial {
+      assert(Polynomial.computeDelta(a, b, c)() == -8.0)
+    }
+  }
+
+  test("unsolvable polynomial") {
+    new unsolvablePolynomial {
+      assert(Polynomial.computeSolutions(a, b, c, Polynomial.computeDelta(a, b, c))() == Set())
+    }
+  }
+
+  test("single root polynomial") {
+    new singleRootPolynomial {
+      assert(Polynomial.computeSolutions(a, b, c, Polynomial.computeDelta(a, b, c))() == Set(-1.0))
+    }
+  }
+
+  test("dual root polynomial") {
+    new dualRootPolynomial {
+      assert(Polynomial.computeSolutions(a, b, c, Polynomial.computeDelta(a, b, c))() == Set(1, -4))
+    }
+  }
+
 }
